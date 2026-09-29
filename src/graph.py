@@ -11,10 +11,8 @@ from src.config import PINECONE_INDEX_NAME
 
 # Local LLM
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.8-flash",
-    temperature=0.1
+    model="gemini-3.8-flash"
 )
-
 # RAG state
 class RAGState(TypedDict):
     question: str
