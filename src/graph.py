@@ -2,7 +2,7 @@ from typing import TypedDict
 
 from langchain_pinecone import PineconeVectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_ollama import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import StateGraph, START, END
 
@@ -10,11 +10,10 @@ from src.config import PINECONE_INDEX_NAME
 
 
 # Local LLM
-llm = ChatOllama(
-    model="llama3.2:3b",
+llm = ChatGoogleGenerativeAI(
+    model="gemini-3.8-flash",
     temperature=0.1
 )
-
 
 # RAG state
 class RAGState(TypedDict):

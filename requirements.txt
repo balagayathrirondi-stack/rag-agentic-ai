@@ -12,3 +12,4 @@ python-dotenv
 streamlit
 fastapi
 uvicorn
+langchain-google-genai
