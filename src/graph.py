@@ -9,11 +9,13 @@ from langgraph.graph import StateGraph, START, END
 from src.config import PINECONE_INDEX_NAME
 
 
-# Local LLM
+# Gemini LLM
 llm = ChatGoogleGenerativeAI(
     model="gemini-3.8-flash"
 )
-# RAG state
+
+
+# RAG State
 class RAGState(TypedDict):
     question: str
     context: list
@@ -27,7 +29,7 @@ embeddings = HuggingFaceEmbeddings(
 )
 
 
-# Pinecone vector store
+# Pinecone Vector Store
 vectorstore = PineconeVectorStore(
     index_name=PINECONE_INDEX_NAME,
     embedding=embeddings
@@ -44,6 +46,8 @@ Answer the question ONLY using the context below.
 If the answer is not present in the context, say:
 "I don't know based on the provided document."
 
+Do not use outside knowledge.
+
 Context:
 {context}
 
@@ -55,7 +59,7 @@ Answer:
 )
 
 
-# Retrieve relevant documents
+# Retrieve relevant chunks
 def retrieve(state: RAGState):
     results = vectorstore.similarity_search_with_score(
         state["question"],
@@ -85,8 +89,19 @@ def generate(state: RAGState):
 
     response = llm.invoke(messages)
 
+    answer = response.content
+
+    # Gemini may return structured content.
+    # Extract only the actual text.
+    if isinstance(answer, list):
+        answer = "".join(
+            item.get("text", "")
+            for item in answer
+            if isinstance(item, dict) and item.get("type") == "text"
+        )
+
     return {
-        "answer": response.content
+        "answer": answer
     }
 
 
